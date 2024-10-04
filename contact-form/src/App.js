@@ -1,16 +1,15 @@
 import './App.css';
 import { useState } from 'react';
+
 function App() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    number:'',
-    messages:''
+    number: '+1',
+    messages: ''
   });
   const [errors, setErrors] = useState({});
   const [responseMessage, setResponseMessage] = useState({ message: '', isError: false });
-
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -27,29 +26,35 @@ function App() {
     const validateForm = () => {
       const errors = {};
       
-      // Name validation
+      // Name validation: Only letters, no numbers allowed
+      const nameRegex = /^[A-Za-z\s]+$/;
       if (!formData.name) {
         errors.name = 'Name is required';
-      } else if (formData.name.length < 3) {
-        errors.name = 'Name must be at least 3 characters long';
+      } else if (!nameRegex.test(formData.name)) {
+        errors.name = 'Name can only contain letters and spaces';
       }
-      
+
+      // Mobile Number validation
+      if (!formData.number) {
+        errors.number = 'Mobile Number is required';
+      } else if (!/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/.test(formData.number)) {
+        errors.number = 'Mobile Number is invalid';
+      }
+
       // Email validation
       if (!formData.email) {
         errors.email = 'Email is required';
       } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
         errors.email = 'Email address is invalid';
       }
-         // Phone number validation
-      const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
-      if (!formData.number) {
-        errors.number = 'Phone number is required';
-      } else if (!phoneRegex.test(formData.number)) {
-        
-        
-        errors.number = 'Phone number must be 10 digits long';
-      }
-      
+
+      // Messages validation
+      // if (!formData.messages) {
+      //   errors.messages = 'Message is required';
+      // } else if (formData.messages.length < 10) {
+      //   errors.messages = 'Message must be at least 10 characters long';
+      // }
+
       return errors;
     };
   
@@ -57,7 +62,7 @@ function App() {
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setResponseMessage({
-        message: `Please fix the errors in the form.`,
+        message: 'Please fix the errors in the form.',
         isError: true
       });
       setErrors(errors);  
@@ -81,7 +86,7 @@ function App() {
           isError: false,
         });
         setFormData({ name: '', email: '', number: '', messages: '' });
-        setErrors({}); 
+        setErrors({});
       } else {
         setResponseMessage({
           message: 'Failed to submit data.',
@@ -96,66 +101,59 @@ function App() {
       });
     }
   };
-  
-  return (
-    <div class="Contact-us-form-box">
 
-<form class="contact-us-form" onSubmit={handleSubmit}>
-     
-     <input
+  return (
+    <div className="Contact-us-form-box">
+      <form className="contact-us-form" onSubmit={handleSubmit}>
+        <input
           type="text"
           className="inputs" 
           name="name"
           placeholder="Your Name"
           value={formData.name}
           onChange={handleInputChange}
-          // className={errors.name ? 'input-error' : ''}
-  required
         />
-               {errors.name && <p style={{ color: 'red' }}>{errors.name}</p>}
+        {errors.name && <p style={{ color: 'red' }}>{errors.name}</p>}
 
+        <input 
+          className="inputs" 
+          type="number" 
+          name="number" 
+          placeholder="+1"
+          value={formData.number}
+          onChange={handleInputChange}
+        />
+        {errors.number && <p style={{ color: 'red' }}>{errors.number}</p>}
 
-     <input 
-     className="inputs" 
-     type="text" 
-     name="number" 
-     placeholder="Your Number"
-     value={formData.number}
-    onChange={handleInputChange}
-    required />
- {errors.number && <p style={{ color: 'red' }}>{errors.number}</p>}
+        <input 
+          className="inputs"
+          type="email" 
+          name="email" 
+          placeholder="Your Mail" 
+          value={formData.email}
+          onChange={handleInputChange}
+        />
+        {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
 
-     <input 
-     className="inputs"
-      type="email" 
-      name="email" 
-      placeholder="Your Mail" 
-      value={formData.email}
-      onChange={handleInputChange}
-      required
-      />
- {errors.mail && <p style={{ color: 'red' }}>{errors.mail}</p>}
+        <textarea
+          className="inputs" 
+          name="messages" 
+          placeholder="Write Your Message"
+          value={formData.messages}
+          onChange={handleInputChange}
+        />
+        {errors.messages && <p style={{ color: 'red' }}>{errors.messages}</p>}
+        
+        <button type="submit">SUBMIT</button>
+      </form>
 
-     <textarea
-      className="inputs" 
-      name="messages" 
-      placeholder="Write Your Message"
-      value={formData.messages}
-      onChange={handleInputChange}
-      required
-      />
-     <button type="submit">SUBMIT</button>
-
-   
- </form>
-     {/* Conditionally show the response message */}
-     {responseMessage.message && (
+      {/* Conditionally show the response message */}
+      {responseMessage.message && (
         <p className={`response-message ${responseMessage.isError ? 'error' : 'success'}`}>
           {responseMessage.message}
         </p>
       )}
-      </div>
-
+    </div>
   );
 }
 

@@ -10,7 +10,7 @@ app.use(express.json())
 app.use(cors());
 //routes
 app.get('/',(req,res)=>{
-    res.send('welcome to premium used engine..')
+    res.send('welcome to premium used engine.')
 })
 
 //create a record
